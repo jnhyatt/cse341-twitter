@@ -1,9 +1,9 @@
 import { db } from "../config/db.js";
 
-export async function createUser(req, oauthId) {
+export async function createUser(handle, oauthId) {
     const newUser = {
         _id: oauthId,
-        handle: req.handle,
+        handle: handle,
         bookmarkedPosts: [],
         following: [],
     };

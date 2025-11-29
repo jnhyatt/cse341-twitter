@@ -1,5 +1,8 @@
 import app from "./app.js";
 import { mongoClient } from "./config/db.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const port = process.env.PORT || 8080;
 const server = app.listen(port, () => {

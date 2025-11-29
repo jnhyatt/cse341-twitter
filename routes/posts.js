@@ -1,5 +1,6 @@
 import express from "express";
-import { createPost, updatePost, getPostById, deletePost } from "../controllers/posts.controller.js";
+import { createPost, updatePost, getPostById, deletePost, likePost } from "../controllers/posts.controller.js";
+import { requirePostOwnership, requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -68,7 +69,7 @@ router.post("/", createPost);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", updatePost);
+router.put("/:id", requirePostOwnership, updatePost);
 
 /**
  * @openapi
@@ -125,6 +126,8 @@ router.get("/:id", getPostById);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", deletePost);
+router.delete("/:id", requirePostOwnership, deletePost);
+
+router.post("/:id/like", requireAuth, likePost);
 
 export default router;

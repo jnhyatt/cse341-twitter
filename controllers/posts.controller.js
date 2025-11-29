@@ -5,11 +5,17 @@ import { createPost as createPostService } from "../services/createPost.service.
 
 export async function createPost(req, res) {
     try {
+        if (!req.isAuthenticated()) {
+            return res.status(401).send("Unauthorized: Please log in");
+        }
+
+        const oauthId = req.user.id;
+
         const { error } = postRequest.validate(req.body);
         if (error) {
             return res.status(400).send(error.details[0].message);
         }
-        await createPostService(req.body, "oauthplaceholder123");
+        await createPostService(req.body, oauthId);
         res.status(201).send("Post created");
     } catch (err) {
         // https://www.mongodb.com/docs/manual/reference/error-codes/ says 11000 is duplicate key error
@@ -62,6 +68,21 @@ export async function deletePost(req, res) {
         }
 
         res.send("Post deleted");
+    } catch (err) {
+        res.status(500).send(err);
+    }
+}
+
+export async function likePost(req, res) {
+    const id = new ObjectId(req.params.id);
+    try {
+        const result = await db.collection("posts").updateOne({ _id: id }, { $addToSet: { likes: req.user.id } });
+
+        if (result.matchedCount === 0) {
+            return res.status(404).send("Post not found");
+        }
+
+        res.send("Post liked");
     } catch (err) {
         res.status(500).send(err);
     }

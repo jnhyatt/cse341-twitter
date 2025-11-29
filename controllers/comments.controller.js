@@ -5,11 +5,17 @@ import { createComment as createCommentService } from "../services/createComment
 
 export async function createComment(req, res) {
     try {
+        if (!req.isAuthenticated()) {
+            return res.status(401).send("Unauthorized: Please log in");
+        }
+
+        const oauthId = req.user.id;
+
         const { error } = commentRequest.validate(req.body);
         if (error) {
             return res.status(400).send(error.details[0].message);
         }
-        await createCommentService(req.body, "oauthplaceholder123");
+        await createCommentService(req.body, oauthId);
         res.status(201).send("Comment created");
     } catch (err) {
         // https://www.mongodb.com/docs/manual/reference/error-codes/ says 11000 is duplicate key error

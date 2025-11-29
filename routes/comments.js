@@ -1,5 +1,6 @@
 import express from "express";
 import { createComment, updateComment, getCommentById, deleteComment } from "../controllers/comments.controller.js";
+import { requireCommentOwnership } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -68,7 +69,7 @@ router.post("/", createComment);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", updateComment);
+router.put("/:id", requireCommentOwnership, updateComment);
 
 /**
  * @openapi
@@ -125,6 +126,6 @@ router.get("/:id", getCommentById);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", deleteComment);
+router.delete("/:id", requireCommentOwnership, deleteComment);
 
 export default router;
